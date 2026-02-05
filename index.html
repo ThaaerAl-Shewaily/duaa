@@ -67,8 +67,8 @@
         const now = player.currentTime;
         localStorage.setItem('kumayl_time', now); // حفظ تلقائي
 
-        // نقوم بطرح 18.5 ثانية من الوقت الحالي للصوت قبل مطابقته مع الكلمات
-const activeIndex = timings.findLastIndex(t => (now - 18.5) >= t.time);
+        // نقوم بطرح 17.5 ثانية من الوقت الحالي للصوت قبل مطابقته مع الكلمات
+const activeIndex = timings.findLastIndex(t => (now - 17.5) >= t.time);
         if(activeIndex !== -1) {
             document.querySelectorAll('.word').forEach(w => w.classList.remove('active-word'));
             const activeWord = document.getElementById('word-' + activeIndex);
@@ -82,3 +82,4 @@ const activeIndex = timings.findLastIndex(t => (now - 18.5) >= t.time);
 </body>
 
 </html>
+
