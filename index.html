@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>دعاء كميل - تفاعلي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #d4af37; --bg: #0a0f1a; --text: #e2e8f0; }
+        body {
+            background: var(--bg) radial-gradient(circle, #16213e 0%, #0a0f1a 100%) fixed;
+            color: var(--text); font-family: 'Amiri', serif; margin: 0; line-height: 2.5;
+            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
+        }
+        header { text-align: center; padding: 40px; }
+        h1 { font-family: 'Reem Kufi', sans-serif; color: var(--gold); font-size: 3.5rem; margin: 0; }
+        .container {
+            max-width: 900px; margin: 0 auto 150px; padding: 40px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px; backdrop-filter: blur(10px); text-align: center; font-size: 1.8rem;
+        }
+        .word { display: inline-block; padding: 0 5px; cursor: pointer; transition: 0.3s; border-radius: 5px; }
+        .active-word { background: var(--gold); color: var(--bg) !important; font-weight: bold; transform: scale(1.15); box-shadow: 0 0 15px var(--gold); }
+        .audio-bar {
+            position: fixed; bottom: 0; width: 100%; background: rgba(10, 15, 26, 0.98);
+            padding: 20px; border-top: 2px solid var(--gold); display: flex; justify-content: center; z-index: 1000;
+        }
+        audio { width: 100%; max-width: 600px; filter: sepia(100%) saturate(150%); }
+    </style>
+</head>
+<body>
+
+<header><h1>دعاء كميل</h1></header>
+
+<div class="container" id="prayer-box">تحميل الكلمات...</div>
+
+<div class="audio-bar">
+    <audio id="audio-player" controls><source src="duaa.mp3" type="audio/mpeg"></audio>
+</div>
+
+<script>
+    const box = document.getElementById('prayer-box');
+    const player = document.getElementById('audio-player');
+    let timings = [];
+
+    // تحميل ملف التوقيت
+    fetch('DuaaTiming.json')
+    .then(res => res.json())
+    .then(data => {
+        timings = data;
+        box.innerHTML = '';
+        timings.forEach((item, i) => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.id = 'word-' + i;
+            span.innerText = item.word + ' ';
+            span.onclick = () => { player.currentTime = item.time; player.play(); };
+            box.appendChild(span);
+        });
+        
+        // استعادة آخر موضع قراءة
+        const savedTime = localStorage.getItem('kumayl_time');
+        if(savedTime) player.currentTime = savedTime;
+    });
+
+    // تحديث التتبع والحفظ التلقائي
+    player.ontimeupdate = () => {
+        const now = player.currentTime;
+        localStorage.setItem('kumayl_time', now); // حفظ تلقائي
+
+        const activeIndex = timings.findLastIndex(t => now >= t.time);
+        if(activeIndex !== -1) {
+            document.querySelectorAll('.word').forEach(w => w.classList.remove('active-word'));
+            const activeWord = document.getElementById('word-' + activeIndex);
+            if(activeWord) {
+                activeWord.classList.add('active-word');
+                activeWord.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    };
+</script>
+</body>
+</html>
