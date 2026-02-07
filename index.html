@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دعاء كميل - عرض الجملة الواحدة</title>
+    <title>دعاء كميل - لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #d4af37;
             --bg-deep: #0a1428;
-            --font-size: 4rem; /* الحجم الافتراضي للخط */
+            --font-size: 4rem; 
         }
 
         body {
@@ -25,11 +25,11 @@
             overflow: hidden;
         }
 
-        /* الإطار الإسلامي المركز */
+        /* حاوية الجملة الواحدة */
         .islamic-frame {
             position: relative;
             width: 85%;
-            height: 40vh; /* تصغير مساحة العرض */
+            height: 35vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,152 +37,211 @@
             border: 2px solid var(--gold);
             border-radius: 20px;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            padding: 20px;
+            padding: 30px;
             text-align: center;
             backdrop-filter: blur(10px);
         }
 
-        /* عرض الجملة الواحدة فقط */
         .prayer-content {
             width: 100%;
             font-size: var(--font-size);
-            line-height: 1.2;
             color: #fff;
             transition: all 0.5s ease-in-out;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            text-shadow: 0 4px 15px rgba(0,0,0,1);
         }
 
-        .active-sentence {
-            animation: fadeIn 0.8s forwards;
-            color: var(--gold);
-        }
+        .active-sentence { animation: fadeIn 0.8s forwards; color: var(--gold); }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* أدوات التحكم الجانبية لتغيير الحجم */
-        .font-controls {
+        /* أدوات التحكم الجانبية (حجم الخط) */
+        .side-controls {
             position: fixed;
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 10px;
-            z-index: 100;
-        }
-
-        /* شريط التحكم السفلي */
-        .player-bar {
-            position: fixed;
-            bottom: 20px;
-            width: 90%;
-            max-width: 800px;
-            background: rgba(15, 25, 45, 0.95);
+            gap: 15px;
+            background: rgba(0,0,0,0.6);
             padding: 15px;
-            border-radius: 20px;
+            border-radius: 50px;
             border: 1px solid var(--gold);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
-        .controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
-        .btn { background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
-        .progress-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; }
-        .progress-bar { height: 100%; background: var(--gold); width: 0%; border-radius: 5px; }
+        /* لوحة التحكم في الصوت السفلية */
+        .player-panel {
+            position: fixed;
+            bottom: 30px;
+            width: 90%;
+            max-width: 900px;
+            background: rgba(15, 25, 45, 0.98);
+            padding: 25px;
+            border-radius: 30px;
+            border: 1px solid var(--gold);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
 
-        /* التوافق مع الشاشات المختلفة (LG TV, Phone, PC) */
-        @media (max-width: 768px) { :root { --font-size: 2.5rem; } .islamic-frame { height: 30vh; } }
-        @media (min-width: 1500px) { :root { --font-size: 6rem; } } /* شاشات التلفزيون الكبيرة */
+        .progress-area {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), #fff);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+
+        .main-controls {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .btn-circle {
+            background: var(--gold);
+            color: var(--bg-deep);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .btn-circle:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--gold); }
+
+        .skip-btn {
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 2.5rem;
+            cursor: pointer;
+        }
+
+        .time-display {
+            font-family: 'monospace';
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+
+        /* تحسينات الشاشات */
+        @media (max-width: 768px) {
+            :root { --font-size: 2.2rem; }
+            .player-panel { bottom: 10px; padding: 15px; }
+            .btn-circle { width: 50px; height: 50px; }
+        }
+        @media (min-width: 1500px) { :root { --font-size: 6.5rem; } }
     </style>
 </head>
 <body>
 
-<div class="font-controls">
-    <button class="btn" onclick="changeFontSize(5)">A+</button>
-    <button class="btn" onclick="changeFontSize(-5)">A-</button>
+<div class="side-controls">
+    <button class="skip-btn" style="font-size: 1.5rem;" onclick="changeFontSize(5)">➕</button>
+    <button class="skip-btn" style="font-size: 1.5rem;" onclick="changeFontSize(-5)">➖</button>
 </div>
 
 <div class="islamic-frame">
-    <div class="prayer-content" id="display-word">
-        تحميل الدعاء...
+    <div class="prayer-content" id="display-text">دعاء كميل بن زياد</div>
+</div>
+
+<div class="player-panel">
+    <div class="progress-area" id="prog-area">
+        <div class="progress-bar" id="prog-bar"></div>
+    </div>
+    
+    <div class="main-controls">
+        <div class="time-display" id="curr-time">00:00</div>
+        
+        <button class="skip-btn" onclick="audio.currentTime -= 10">⏪</button>
+        
+        <button class="btn-circle" id="play-pause-btn">▶</button>
+        
+        <button class="skip-btn" onclick="audio.currentTime += 10">⏩</button>
+        
+        <div class="time-display" id="total-time">00:00</div>
     </div>
 </div>
 
-<div class="player-bar">
-    <div class="progress-container" id="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    <div class="controls">
-        <button class="btn" onclick="audio.currentTime -= 5">⏪</button>
-        <button class="btn" id="play-btn" style="font-size: 2rem;">▶</button>
-        <button class="btn" onclick="audio.currentTime += 5">⏩</button>
-    </div>
-</div>
-
-<audio id="main-audio" src="duaa.mp3"></audio>
+<audio id="prayer-audio" src="duaa.mp3"></audio>
 
 <script>
-    const audio = document.getElementById('main-audio');
-    const playBtn = document.getElementById('play-btn');
-    const displayWord = document.getElementById('display-word');
-    const progressBar = document.getElementById('progress-bar');
-    const progressContainer = document.getElementById('progress-container');
+    const audio = document.getElementById('prayer-audio');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const progBar = document.getElementById('prog-bar');
+    const progArea = document.getElementById('prog-area');
+    const displayText = document.getElementById('display-text');
     let timings = [];
 
-    // تحميل ملف التوقيت
-    fetch('DuaaTiming.json')
-    .then(res => res.json())
-    .then(data => {
+    // جلب التوقيت
+    fetch('DuaaTiming.json').then(r => r.json()).then(data => {
         timings = data.fragments || data;
-        restoreProgress();
+        const saved = localStorage.getItem('kumayl_pos');
+        if(saved) audio.currentTime = parseFloat(saved);
     });
 
-    // التحكم في حجم الخط يدوياً
-    function changeFontSize(delta) {
-        let currentSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
-        document.documentElement.style.setProperty('--font-size', (currentSize + delta) + 'px');
+    // التحكم في حجم الخط
+    function changeFontSize(val) {
+        let size = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
+        document.documentElement.style.setProperty('--font-size', (size + val) + 'px');
     }
 
-    playBtn.onclick = () => {
-        if (audio.paused) { audio.play(); playBtn.innerText = '⏸'; }
-        else { audio.pause(); playBtn.innerText = '▶'; }
+    // تشغيل وإيقاف
+    playPauseBtn.onclick = () => {
+        if(audio.paused) { audio.play(); playPauseBtn.innerText = '⏸'; }
+        else { audio.pause(); playPauseBtn.innerText = '▶'; }
     };
 
+    // تحديث الحالة
     audio.ontimeupdate = () => {
-        const percent = (audio.currentTime / audio.duration) * 100;
-        progressBar.style.width = percent + '%';
+        // شريط التقدم
+        const p = (audio.currentTime / audio.duration) * 100;
+        progBar.style.width = p + '%';
         
+        document.getElementById('curr-time').innerText = formatTime(audio.currentTime);
+        document.getElementById('total-time').innerText = formatTime(audio.duration);
+
+        // تبديل الجمل
         const now = audio.currentTime;
-        // البحث عن الجملة الحالية
-        const activeItem = timings.find(t => now >= parseFloat(t.begin || t.time) && now <= parseFloat(t.end || (t.time + 2)));
+        const item = timings.find(t => now >= parseFloat(t.begin || t.time) && now <= parseFloat(t.end || (t.time + 1.5)));
         
-        if (activeItem) {
-            const newText = activeItem.lines ? activeItem.lines[0] : activeItem.word;
-            if (displayWord.innerText !== newText) {
-                displayWord.innerText = newText;
-                displayWord.classList.remove('active-sentence');
-                void displayWord.offsetWidth; // إعادة تشغيل الأنيميشن
-                displayWord.classList.add('active-sentence');
+        if(item) {
+            const txt = item.lines ? item.lines[0] : item.word;
+            if(displayText.innerText !== txt) {
+                displayText.innerText = txt;
+                displayText.classList.remove('active-sentence');
+                void displayText.offsetWidth; 
+                displayText.classList.add('active-sentence');
             }
         }
-        localStorage.setItem('kumayl_save', audio.currentTime);
+        localStorage.setItem('kumayl_pos', audio.currentTime);
     };
 
-    progressContainer.onclick = (e) => {
-        audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration;
-    };
-
-    function restoreProgress() {
-        const saved = localStorage.getItem('kumayl_save');
-        if (saved) audio.currentTime = parseFloat(saved);
+    function formatTime(s) {
+        if(isNaN(s)) return "00:00";
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return m.toString().padStart(2, '0') + ":" + sec.toString().padStart(2, '0');
     }
+
+    progArea.onclick = (e) => {
+        audio.currentTime = (e.offsetX / progArea.clientWidth) * audio.duration;
+    };
 </script>
 
 </body>
