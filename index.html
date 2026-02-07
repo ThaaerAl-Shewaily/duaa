@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دعاء كميل - الواجهة الروحانية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
+    <title>دعاء كميل - عرض الجملة الواحدة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gold-primary: #d4af37;
-            --gold-secondary: #f3e5ab;
+            --gold: #d4af37;
             --bg-deep: #0a1428;
-            --container-bg: rgba(255, 255, 255, 0.05);
+            --font-size: 4rem; /* الحجم الافتراضي للخط */
         }
 
         body {
@@ -20,183 +19,110 @@
             margin: 0;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* الزخرفة الإسلامية الخلفية */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        header {
-            margin-top: 40px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-family: 'Reem Kufi', sans-serif;
-            font-size: 4rem;
-            color: var(--gold-primary);
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            margin: 0;
-        }
-
-        /* الإطار الإسلامي المزخرف */
+        /* الإطار الإسلامي المركز */
         .islamic-frame {
             position: relative;
-            max-width: 900px;
-            width: 90%;
-            margin: 40px auto;
-            padding: 60px;
-            background: var(--container-bg);
-            border: 15px solid transparent;
-            /* استبدال رابط الصورة بإطار ذهبي يحاكي الزخرفة */
-            border-image: url('https://www.transparenttextures.com/patterns/gold-scale.png') 30 round; 
-            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.2);
-            border: 2px solid var(--gold-primary);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        /* زوايا الإطار (محاكاة للصورة) */
-        .islamic-frame::after {
-            content: "❈";
-            position: absolute;
-            top: -20px; left: -20px;
-            font-size: 40px; color: var(--gold-primary);
-        }
-
-        .prayer-content {
-            font-size: 1.8rem;
-            line-height: 2.8;
-            text-align: justify;
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 15px;
-        }
-
-        /* تنسيق الكلمات */
-        .fragment {
-            display: inline-block;
-            padding: 0 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 5px;
-        }
-
-        .fragment:hover {
-            color: var(--gold-secondary);
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .active-fragment {
-            background: var(--gold-primary);
-            color: #000 !important;
-            font-weight: bold;
-            box-shadow: 0 0 15px var(--gold-primary);
-        }
-
-        /* شريط التحكم (بناءً على تصميم الصورة) */
-        .player-bar {
-            position: fixed;
-            bottom: 30px;
-            width: 90%;
-            max-width: 800px;
-            background: rgba(15, 25, 45, 0.9);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid var(--gold-primary);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            backdrop-filter: blur(15px);
-        }
-
-        .controls {
+            width: 85%;
+            height: 40vh; /* تصغير مساحة العرض */
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        .btn {
-            background: none;
-            border: none;
-            color: var(--gold-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn:hover { transform: scale(1.2); }
-
-        .progress-container {
+        /* عرض الجملة الواحدة فقط */
+        .prayer-content {
             width: 100%;
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-            cursor: pointer;
-            position: relative;
+            font-size: var(--font-size);
+            line-height: 1.2;
+            color: #fff;
+            transition: all 0.5s ease-in-out;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
 
-        .progress-bar {
-            height: 100%;
-            background: var(--gold-primary);
-            width: 0%;
-            border-radius: 5px;
+        .active-sentence {
+            animation: fadeIn 0.8s forwards;
+            color: var(--gold);
         }
 
-        .time-info {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* أدوات التحكم الجانبية لتغيير الحجم */
+        .font-controls {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--gold-secondary);
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 100;
         }
 
-        /* تخصيص السكرول بار */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 10px; }
+        /* شريط التحكم السفلي */
+        .player-bar {
+            position: fixed;
+            bottom: 20px;
+            width: 90%;
+            max-width: 800px;
+            background: rgba(15, 25, 45, 0.95);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .btn { background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+        .progress-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; }
+        .progress-bar { height: 100%; background: var(--gold); width: 0%; border-radius: 5px; }
+
+        /* التوافق مع الشاشات المختلفة (LG TV, Phone, PC) */
+        @media (max-width: 768px) { :root { --font-size: 2.5rem; } .islamic-frame { height: 30vh; } }
+        @media (min-width: 1500px) { :root { --font-size: 6rem; } } /* شاشات التلفزيون الكبيرة */
     </style>
 </head>
 <body>
 
-<header>
-    <h1>دعاء كميل</h1>
-</header>
+<div class="font-controls">
+    <button class="btn" onclick="changeFontSize(5)">A+</button>
+    <button class="btn" onclick="changeFontSize(-5)">A-</button>
+</div>
 
 <div class="islamic-frame">
-    <div class="prayer-content" id="prayer-content">
-        جاري تحميل الكلمات...
+    <div class="prayer-content" id="display-word">
+        تحميل الدعاء...
     </div>
 </div>
 
 <div class="player-bar">
-    <div class="time-info">
-        <span id="current-time">0:00</span>
-        <span id="duration">0:00</span>
-    </div>
-    
     <div class="progress-container" id="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
     </div>
-
     <div class="controls">
-        <button class="btn" onclick="skip(-10)">⏪</button>
-        <button class="btn" id="play-btn" style="font-size: 2.5rem;">▶</button>
-        <button class="btn" onclick="skip(10)">⏩</button>
-    </div>
-    
-    <div style="text-align: center; font-size: 0.8rem; color: var(--gold-secondary); margin-top: 5px;">
-        يتم حفظ الحالة تلقائياً...
+        <button class="btn" onclick="audio.currentTime -= 5">⏪</button>
+        <button class="btn" id="play-btn" style="font-size: 2rem;">▶</button>
+        <button class="btn" onclick="audio.currentTime += 5">⏩</button>
     </div>
 </div>
 
@@ -205,92 +131,58 @@
 <script>
     const audio = document.getElementById('main-audio');
     const playBtn = document.getElementById('play-btn');
+    const displayWord = document.getElementById('display-word');
     const progressBar = document.getElementById('progress-bar');
     const progressContainer = document.getElementById('progress-container');
-    const prayerContent = document.getElementById('prayer-content');
     let timings = [];
 
-    // تحميل ملف JSON
+    // تحميل ملف التوقيت
     fetch('DuaaTiming.json')
     .then(res => res.json())
     .then(data => {
         timings = data.fragments || data;
-        renderWords();
         restoreProgress();
     });
 
-    function renderWords() {
-        prayerContent.innerHTML = '';
-        timings.forEach((item, i) => {
-            const span = document.createElement('span');
-            span.className = 'fragment';
-            span.id = 'f-' + i;
-            span.innerText = (item.lines ? item.lines[0] : item.word) + ' ';
-            span.onclick = () => {
-                audio.currentTime = parseFloat(item.begin || item.time);
-                audio.play();
-            };
-            prayerContent.appendChild(span);
-        });
+    // التحكم في حجم الخط يدوياً
+    function changeFontSize(delta) {
+        let currentSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
+        document.documentElement.style.setProperty('--font-size', (currentSize + delta) + 'px');
     }
 
-    // تشغيل وإيقاف
     playBtn.onclick = () => {
-        if (audio.paused) {
-            audio.play();
-            playBtn.innerText = '⏸';
-        } else {
-            audio.pause();
-            playBtn.innerText = '▶';
-        }
+        if (audio.paused) { audio.play(); playBtn.innerText = '⏸'; }
+        else { audio.pause(); playBtn.innerText = '▶'; }
     };
 
-    // تحديث شريط التقدم والتتبع
     audio.ontimeupdate = () => {
         const percent = (audio.currentTime / audio.duration) * 100;
         progressBar.style.width = percent + '%';
         
-        document.getElementById('current-time').innerText = formatTime(audio.currentTime);
-        document.getElementById('duration').innerText = formatTime(audio.duration);
-
-        // التتبع الذكي للكلمات
         const now = audio.currentTime;
-        const activeIdx = timings.findIndex(t => now >= parseFloat(t.begin || t.time) && now <= parseFloat(t.end || (t.time + 1)));
+        // البحث عن الجملة الحالية
+        const activeItem = timings.find(t => now >= parseFloat(t.begin || t.time) && now <= parseFloat(t.end || (t.time + 2)));
         
-        if (activeIdx !== -1) {
-            document.querySelectorAll('.fragment').forEach(el => el.classList.remove('active-word', 'active-fragment'));
-            const activeEl = document.getElementById('f-' + activeIdx);
-            if (activeEl) {
-                activeEl.classList.add('active-fragment');
-                activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (activeItem) {
+            const newText = activeItem.lines ? activeItem.lines[0] : activeItem.word;
+            if (displayWord.innerText !== newText) {
+                displayWord.innerText = newText;
+                displayWord.classList.remove('active-sentence');
+                void displayWord.offsetWidth; // إعادة تشغيل الأنيميشن
+                displayWord.classList.add('active-sentence');
             }
         }
-
-        // حفظ التقدم
         localStorage.setItem('kumayl_save', audio.currentTime);
     };
 
-    function skip(seconds) {
-        audio.currentTime += seconds;
-    }
-
-    function formatTime(seconds) {
-        const min = Math.floor(seconds / 60);
-        const sec = Math.floor(seconds % 60);
-        return min + ":" + (sec < 10 ? '0' : '') + sec;
-    }
+    progressContainer.onclick = (e) => {
+        audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration;
+    };
 
     function restoreProgress() {
         const saved = localStorage.getItem('kumayl_save');
         if (saved) audio.currentTime = parseFloat(saved);
     }
-
-    // التنقل عبر شريط التقدم
-    progressContainer.onclick = (e) => {
-        const width = progressContainer.clientWidth;
-        const clickX = e.offsetX;
-        audio.currentTime = (clickX / width) * audio.duration;
-    };
 </script>
 
 </body>
