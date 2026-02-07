@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دعاء كميل - المزامنة النهائية</title>
+    <title>دعاء كميل - المزامنة الذكية</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,7 +19,6 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* الإطار الإسلامي */
         .islamic-frame {
             position: relative; width: 85%; height: 35vh;
             display: flex; justify-content: center; align-items: center;
@@ -40,7 +39,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* التحكم في الحجم */
         .side-controls {
             position: fixed; left: 20px; top: 50%; transform: translateY(-50%);
             display: flex; flex-direction: column; gap: 15px;
@@ -49,7 +47,6 @@
 
         .btn-side { background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer; }
 
-        /* لوحة التحكم في الصوت */
         .player-panel {
             position: fixed; bottom: 30px; width: 90%; max-width: 900px;
             background: rgba(15, 25, 45, 0.98); padding: 25px;
@@ -84,7 +81,7 @@
 </div>
 
 <div class="islamic-frame">
-    <div class="prayer-content" id="display-text">انتظر تحميل المزامنة...</div>
+    <div class="prayer-content" id="display-text">تحميل التوقيت...</div>
 </div>
 
 <div class="player-panel">
@@ -94,9 +91,9 @@
     
     <div class="main-controls">
         <div class="time-display" id="curr-time">00:00</div>
-        <button class="skip-btn" onclick="audio.currentTime -= 10">⏪</button>
+        <button class="skip-btn" id="btn-back">⏪</button>
         <button class="btn-play" id="play-pause-btn">▶</button>
-        <button class="skip-btn" onclick="audio.currentTime += 10">⏩</button>
+        <button class="skip-btn" id="btn-forward">⏩</button>
         <div class="time-display" id="total-time">00:00</div>
     </div>
 </div>
@@ -109,20 +106,21 @@
     const progBar = document.getElementById('prog-bar');
     const progArea = document.getElementById('prog-area');
     const displayText = document.getElementById('display-text');
+    const btnBack = document.getElementById('btn-back');
+    const btnForward = document.getElementById('btn-forward');
     let timings = [];
 
-    // جلب ملف JSON المولد من aeneas أو الكود اليدوي
+    // جلب ملف JSON المولد
     fetch('DuaaTiming.json')
     .then(r => r.json())
     .then(data => {
-        // هيكلية aeneas تستخدم fragments، أما الكود البسيط يستخدم مصفوفة مباشرة
         timings = data.fragments || data;
+        displayText.innerText = "اضغط تشغيل للبدء";
         
-        // استعادة آخر موضع وقت تم حفظه
         const saved = localStorage.getItem('kumayl_pos');
         if(saved) audio.currentTime = parseFloat(saved);
     })
-    .catch(err => { displayText.innerText = "خطأ في تحميل ملف JSON"; });
+    .catch(err => { displayText.innerText = "خطأ في تحميل ملف التوقيت"; });
 
     function changeFontSize(val) {
         let size = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
@@ -134,19 +132,24 @@
         else { audio.pause(); playPauseBtn.innerText = '▶'; }
     };
 
-    audio.ontimeupdate = () => {
+    // وظيفة القفز السريع مع تحديث التزامن فوراً
+    btnBack.onclick = () => { audio.currentTime -= 10; updateSync(); };
+    btnForward.onclick = () => { audio.currentTime += 10; updateSync(); };
+
+    // وظيفة تحديث التزامن (المحرك الأساسي)
+    function updateSync() {
         const now = audio.currentTime;
         
-        // تحديث شريط التقدم والوقت
+        // تحديث الواجهة الرقمية
         const p = (now / audio.duration) * 100;
         progBar.style.width = p + '%';
         document.getElementById('curr-time').innerText = formatTime(now);
         document.getElementById('total-time').innerText = formatTime(audio.duration);
 
-        // البحث عن الجملة (المزامنة الدقيقة)
+        // البحث الفوري عن الجملة المطابقة للوقت الجديد
         const item = timings.find(t => {
             const start = parseFloat(t.begin || t.time);
-            const end = parseFloat(t.end || (t.time + 3)); // افتراضي 3 ثوانٍ إذا لم يوجد وقت نهاية
+            const end = parseFloat(t.end || (parseFloat(t.time) + 3));
             return now >= start && now <= end;
         });
         
@@ -160,7 +163,13 @@
             }
         }
         localStorage.setItem('kumayl_pos', now);
-    };
+    }
+
+    // استدعاء التحديث عند تغيير وقت الصوت (سواء بالتشغيل أو التقديم)
+    audio.ontimeupdate = updateSync;
+    
+    // حدث يضمن إعادة التزامن فور تغيير الموضع يدوياً (Seek)
+    audio.onseeked = updateSync;
 
     function formatTime(s) {
         if(isNaN(s)) return "00:00";
@@ -170,7 +179,10 @@
     }
 
     progArea.onclick = (e) => {
-        audio.currentTime = (e.offsetX / progArea.clientWidth) * audio.duration;
+        const rect = progArea.getBoundingClientRect();
+        const offset = e.clientX - rect.left;
+        audio.currentTime = (offset / rect.width) * audio.duration;
+        updateSync();
     };
 </script>
 </body>
